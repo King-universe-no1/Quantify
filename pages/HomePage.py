@@ -1,12 +1,13 @@
 #*------------------------------------=-IMPORTS---------------------------------------------------------*
 import streamlit as st
-from Helper import CheckLoginState,get_data,GetCurrencySymbol,ConvertCurrency
+from Helper import CheckLoginState,get_data,GetCurrencySymbol
 try:
  userid=st.session_state.userid
 except Exception as e:
     st.error(f"Error fetching user id {e}")
     st.switch_page("Main.py")
-from Helper import GetUserAssetswithCurrency
+# from Helper import GetUserAssetswithCurrency
+from DatabaseConnection import GetUserAssets
 import time
 
 
@@ -15,8 +16,8 @@ st.set_page_config(layout="wide")
 
 # st_autorefresh(interval=10000)  # 10 seconds
 #------------------------------------------Home page--------------------------------------------------------------
-if "user_currency" not in st.session_state:
-            st.session_state.user_currency='Default'
+# if "user_currency" not in st.session_state:
+#             st.session_state.user_currency='Default'
 #Initially setting user currency to INR, can be changed by user from the dashboard
 CheckLoginState()
 if userid:
@@ -26,8 +27,8 @@ if userid:
 #----USER id is a tuple hence directly passing it gives an error
   time.sleep(3)
   try:
-      st.write(userid)
-      assets=GetUserAssetswithCurrency(userid)
+      #st.write(userid)
+      assets=GetUserAssets(userid)
   except Exception as e:
     st.error(f"Error fetching user assets {e}")
 #!ERROR HERE
@@ -51,28 +52,27 @@ with col1:
 with col2:
         if st.button("Refresh",use_container_width=True,help="Click to refresh the data on the dashboard"):
                 st.rerun()
-        if "user_currency" not in st.session_state:
-            st.session_state.user_currency='Default'
-        else:
-            st.session_state.user_currency=st.session_state.user_currency
+        # if "user_currency" not in st.session_state:
+        #     st.session_state.user_currency='Default'
+        # else:
+        #     st.session_state.user_currency=st.session_state.user_currency
         # st.write(st.session_state.user_currency)
         # st.session_state.currency_symbol=GetCurrencySymbol(st.session_state.user_currency)
         # st.write("Here")
         #!REMOVE AFTER IT WORKS
-        currency_list=["Default","INR", "USD", "EUR", "GBP", "CNY"]
-        for i in currency_list:
-            if st.session_state.user_currency in i:
-                choosen=currency_list.pop(currency_list.index(i))
-                currency_list.insert(0,choosen)
-                #sends the selected currency to top of the list
-                #this ensures that the selected currency is visible to user and also selected by default
-                break
+        # currency_list=["Default","INR", "USD", "EUR", "GBP", "CNY"]
+        # for i in currency_list:
+        #     if st.session_state.user_currency in i:
+        #         choosen=currency_list.pop(currency_list.index(i))
+        #         currency_list.insert(0,choosen)
+        #         #sends the selected currency to top of the list
+        #         #this ensures that the selected currency is visible to user and also selected by default
+        #         break
             
         
-        st.selectbox('Choose Currency',currency_list,key="user_currency",)
-        st.write("Selected Currency:", st.session_state.user_currency)
-        # #!REMOVE AFTER BUG FIXES
-        st.session_state.currency_symbol=GetCurrencySymbol(st.session_state.user_currency)
+        # st.selectbox('Choose Currency',currency_list,key="user_currency",)
+        # st.write("Selected Currency:", st.session_state.user_currency)
+        # # #!REMOVE AFTER BUG FIXES
         
         
 st.title("Your Financial Dashboard",text_alignment="center")
@@ -83,19 +83,21 @@ try:
     if len(results_home)>0:
         cols=st.columns(len(results_home))
     for i,result in enumerate(results_home):
+    #going through each asset
         with cols[i]:
     #    latest=ConvertCurrency(result['currency'],st.session_state.user_currency,result['latest'])
             latest=result['latest']
-            if st.session_state.currency_symbol ==None:
-                display_currency=GetCurrencySymbol(result['currency'])
+            # if st.session_state.currency_symbol ==None:
+            display_currency=GetCurrencySymbol(result['currency'])
             st.metric(label=result["symbol"],
-                value=f"{st.session_state.currency_symbol}{latest}",
-                delta=f"{(latest-result['pricebought'])*100/result['pricebought']:.3f} %",
+                value=f"{display_currency}{latest:.2f}",
+                delta=f"{(latest-result['pricebought'])*100/result['pricebought']:.2f} %",
                 border=True,
             #   chart_data=result["close_series"],
             #   chart_type="line",
                )
-            st.write(result['currency'])
+            # st.write(result['currency'])
+            # st.write(f"Price Bought: {result['pricebought']}")
     #    st.write(result['open'])
     #the i is the columns index
     # st.line_chart(result["close_series"])

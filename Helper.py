@@ -4,8 +4,8 @@ import yfinance as yf
 from forex_python.converter import CurrencyCodes
 import requests
 from DatabaseConnection import AddNewAsset,GetUserAssets
-if "user_currency" not in st.session_state:
-            st.session_state.user_currency='INR'
+# if "user_currency" not in st.session_state:
+#             st.session_state.user_currency='INR'
 # st.write(st.session_state.user_currency)
 #!Delete when bug fixes
 
@@ -32,34 +32,34 @@ e=''
 #             #  fallback so app doesn't crash
 #     return amount  # return original value instead of None
 @st.cache_data(ttl=3600)
-def ConvertCurrency(amount,from_currency:str,to_currency:str):
-    if to_currency == "Default":
-        return amount
-    if from_currency == to_currency:
-        return amount
-    #same currency not converted
-    url = f"https://api.exchangerate-api.com/v4/latest/{from_currency}"
-    # try:
-    response = requests.get(url)
-    data = response.json()
-    exchange_rate = data['rates'][to_currency]
-    st.write(f"Converting {amount} from {from_currency} to {to_currency} at rate {exchange_rate} Amount is {type(amount)}")
-    try:
-        amount=float(amount)
-    except Exception as e:
-        st.warning(f"Amount conversion error: {e}")
-        return amount
-    #!REMOVE ALL INSTANCESOF THIS AFTER BUG RESOLVES
-    converted_amount = amount* exchange_rate
-    return converted_amount
-    # except Exception as e:
-    #     return f"Error: {e}"
-#coverted=ConvertCurrency(100,"USD","INR")
+# def ConvertCurrency(amount,from_currency:str,to_currency:str):
+#     if to_currency == "Default":
+#         return amount
+#     if from_currency == to_currency:
+#         return amount
+#     #same currency not converted
+#     url = f"https://api.exchangerate-api.com/v4/latest/{from_currency}"
+#     # try:
+#     response = requests.get(url)
+#     data = response.json()
+#     exchange_rate = data['rates'][to_currency]
+#     st.write(f"Converting {amount} from {from_currency} to {to_currency} at rate {exchange_rate} Amount is {type(amount)}")
+#     try:
+#         amount=float(amount)
+#     except Exception as e:
+#         st.warning(f"Amount conversion error: {e}")
+#         return amount
+#     #!REMOVE ALL INSTANCESOF THIS AFTER BUG RESOLVES
+#     converted_amount = amount* exchange_rate
+#     return converted_amount
+#     # except Exception as e:
+#     #     return f"Error: {e}"
+# #coverted=ConvertCurrency(100,"USD","INR")
 @st.cache_data(ttl=3600)
 def GetCurrencySymbol(currency_code):
-    if currency_code == "Default" or None:
-        return None
-    st.write(f"Getting symbol for {currency_code}")
+    # if currency_code == "Default" or None:
+    #     return None
+    # st.write(f"Getting symbol for {currency_code}")
     #!REMOVE AFTER BUG FIXES
     c=CurrencyCodes()
     code=c.get_symbol(currency_code)
@@ -77,7 +77,7 @@ def CheckLoginState():
         
 @st.cache_data(ttl=45)
 def get_data(assets):
-    st.write('Currency in get data',st.session_state.user_currency)
+    # st.write('Currency in get data',st.session_state.user_currency)
     results=[]
     for stock in assets:
         Atype=stock[0]
@@ -112,13 +112,13 @@ def get_data(assets):
             #     })
             else:
                 try:
-                    st.write("Data before conversion",data)
+                #     st.write("Data before conversion",data)
                     results.append({
                     "symbol": symbol,
-                    "latest": ConvertCurrency(data["Close"].iloc[-1],currency,st.session_state.user_currency),
-                    "open": ConvertCurrency(data["Open"].iloc[0],currency,st.session_state.user_currency),
-                    "high": ConvertCurrency(data["High"].iloc[-1],currency,st.session_state.user_currency),
-                    "low": ConvertCurrency(data["Low"].iloc[-1],currency,st.session_state.user_currency),
+                    "latest": data["Close"].iloc[-1],
+                    "open": data["Open"].iloc[0],
+                    "high": data["High"].iloc[-1],
+                    "low": data["Low"].iloc[-1],
                     #the second arg is the third arg and third arg is second arg fix it
                     "close_series": data["Close"],
                     "open_series": data["Open"],
@@ -127,9 +127,9 @@ def get_data(assets):
                     "pricebought": pricebought,
                     "quantity": quantity,
                 })
-                    st.write("Results",results)
+                    # st.write("Results",results)
                 except Exception as e:
-                    st.warning(f"Error converting currency for {symbol}: {e}")
+                    st.warning(f"Error in data for {symbol}: {e}")
                     
             # for item in results:
             #     for key,value in item.items():
@@ -145,7 +145,7 @@ def get_data(assets):
             #TODO Add crypto support
         #st.write(data)
         # st.write(yf.ticker(symbol).info)
-    st.write("Returning data")
+    # st.write("Returning data")
     #!REMOVE AFTR BUG FIXES
     # return data
     return results
@@ -182,22 +182,22 @@ def SmartSearch(query):
 # SmartSearch("Tesla")
 # get_data([["Stock","TSLA"]])
 
-def AddNewAssetwithCurrency(userid,assettype,symbol,MovementType,PriceBought,Quantity,SMSAlert,EmailAlert):
-    PriceBought=ConvertCurrency(PriceBought,st.session_state.user_currency,"INR")
-    #converts data into INR before adding to DB so that all data is in same currency and can be easily compared and calculated with
-    result,reason=AddNewAsset(userid,assettype,symbol,MovementType,PriceBought,Quantity,SMSAlert,EmailAlert)
-    return result,reason
-def GetUserAssetswithCurrency(userid):
-    assets=GetUserAssets(userid)
-    #assets is a list of tuples with each tuple containing the asset details
-    for asset in assets:
-        asset=list(asset)
-        asset.insert(2, ConvertCurrency(asset[2], "INR", st.session_state.user_currency))
-        asset=tuple(asset)
-        #inserting after conversion cause tuple are immutable
-    #converts data into user's currency before showing on dashboard 
+# def AddNewAssetwithCurrency(userid,assettype,symbol,MovementType,PriceBought,Quantity,SMSAlert,EmailAlert):
+#     # PriceBought=PriceBought,st.session_state.user_currency,"INR")
+#     #converts data into INR before adding to DB so that all data is in same currency and can be easily compared and calculated with
+#     result,reason=AddNewAsset(userid,assettype,symbol,MovementType,PriceBought,Quantity,SMSAlert,EmailAlert)
+#     return result,reason
+# def GetUserAssetswithCurrency(userid):
+#     assets=GetUserAssets(userid)
+#     #assets is a list of tuples with each tuple containing the asset details
+#     for asset in assets:
+#         asset=list(asset)
+#         # asset.insert(2, ConvertCurrency(asset[2], "INR", st.session_state.user_currency))
+#         asset=tuple(asset)
+#         #inserting after conversion cause tuple are immutable
+#     #converts data into user's currency before showing on dashboard 
 
-    return assets
+#     return assets
 
 def check_user_id(userid):
     if userid is None:

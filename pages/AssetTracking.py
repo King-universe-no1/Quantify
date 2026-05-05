@@ -1,6 +1,7 @@
 import streamlit as st
 #-------TRACK NEW ASSET-----------
-from Helper import SmartSearch,get_data, AddNewAssetwithCurrency,check_user_id
+from Helper import SmartSearch,get_data,check_user_id
+from DatabaseConnection import AddNewAsset
 import time
 #------Setting variables
 assetpl='AAPL'
@@ -106,11 +107,11 @@ def button(result):
     assetpl=result[0]
     st.session_state.asset=asset
     assets=[[assettype,assetpl,asset],]
-    st.write("Before get data",assets)
-    st.write(st.session_state.user_currency)
+    # st.write("Before get data",assets)
+    # st.write(st.session_state.user_currency)
     st.session_state.data=get_data(assets)
     #data comes here when stock name is entered
-    st.write(st.session_state.data)
+    
     #!remove after bug fixes
     price=st.session_state.data[0]['latest']
     #!BUG HERE
@@ -143,7 +144,7 @@ if asset:
     # st.write("Got result")
     col1,col2,col3=st.columns([2,4,2])
     with col2:
-        st.write("Creating buttons")
+        # st.write("Creating buttons")
         if top5list:
             for result in top5list:
                 if i<=5:
@@ -174,7 +175,7 @@ if "data" not in st.session_state:
 # st.session_state.buy_price = data[0]['latest']
 if asset:
     if st.session_state.user_currency == "Default":
-        st.write(st.session_state.data)
+        #st.write(st.session_state.data)
         #!REMOV AFTER BUG FIXES
         currency_for_price=st.session_state.data[0]['currency']
     else:
@@ -194,7 +195,7 @@ if asset:
         time.sleep(0.5)
         userid=st.session_state.userid[0]
         # CurrencyRates(st.session_state.user_currency,"INR",st.session_state.buyprice)
-        result,reason=AddNewAssetwithCurrency(userid,assettype,assetpl,MovementType="Medium Movements",PriceBought=st.session_state.buyprice,Quantity=st.session_state.quantity,SMSAlert=st.session_state.alerts,EmailAlert=st.session_state.emails)
+        result,reason=AddNewAsset(userid,assettype,assetpl,MovementType="Medium Movements",PriceBought=st.session_state.buyprice,Quantity=st.session_state.quantity,SMSAlert=st.session_state.alerts,EmailAlert=st.session_state.emails)
         if result:
             # st.success(reason)
             st.success(f"Now tracking {assetpl} ({asset})")
