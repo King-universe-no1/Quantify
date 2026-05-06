@@ -31,7 +31,7 @@ e=''
 
 #             #  fallback so app doesn't crash
 #     return amount  # return original value instead of None
-@st.cache_data(ttl=3600)
+# @st.cache_data(ttl=3600)
 # def ConvertCurrency(amount,from_currency:str,to_currency:str):
 #     if to_currency == "Default":
 #         return amount
@@ -159,7 +159,7 @@ def GetStockData(symbol,period="1d",interval="5m"):
         data=stock.history(period=period,interval=interval)
         return data,stock.info["currency"]
     except Exception as e:
-        st.warning(f"Error fetching data for {symbol}: {e}")
+        st.warning(f"Error fetching data for {symbol}: {e}",icon="⚠️")
 @st.cache_data(ttl=3600)
 def SmartSearch(query):
     top5list=[]
@@ -198,9 +198,17 @@ def SmartSearch(query):
 #     #converts data into user's currency before showing on dashboard 
 
 #     return assets
-
 def check_user_id(userid):
     if userid is None:
         st.error("User not logged in")
         st.stop()
         st.switch_page("Main.py")
+@st.cache_data(ttl=3600)
+def GetShortName(symbol):
+    stock=yf.Search(symbol).quotes
+    # try:
+    shortname=stock[0]['shortname']
+    return shortname
+    # except Exception as e:
+    #     st.warning(f"Could not find {e}")
+    

@@ -149,3 +149,27 @@ def AddNewAsset(userid,assettype,symbol,MovementType,PriceBought,Quantity,SMSAle
 
 # AddNewAsset(1,"Stock","TSLA","Medium Movements",800.00,74,True,True)
 # AddNewAsset(1,"Stock","TSLA","Medium Movements",750.00,10,True,True) 
+def DeleteAsset(userid,symbol):
+    try:
+        cursor.execute("SELECT * FROM UserInfo WHERE Userid=?", (userid,))
+        user=cursor.fetchone()
+        #checks if user exists
+        if not user:
+            print("User not found")
+            return "User not found"
+        else:
+            cursor.execute("SELECT * FROM AssetsTracking WHERE Userid=? AND Symbol=?", (userid,symbol))
+            asset=cursor.fetchone()
+            #checks if asset even exists
+            if not asset:
+                print("Asset not found in user's portfolio")
+                return "Asset not found in user's portfolio"
+            else:
+                cursor.execute("DELETE FROM AssetsTracking WHERE Userid=? AND Symbol=?", (userid,symbol))
+                conn.commit()
+                #deletes the data
+                print("Asset removed successfully")
+                return "Asset removed successfully"
+    except sqlite3.Error as e:
+        print(f"Error removing asset: {e}")
+        return f"Error removing asset: {e}"

@@ -121,8 +121,10 @@ except Exception as e:
 col1, col2, col3 = st.columns([1,2,1])
 
 with col2:
-     if st.button("Track New Asset",use_container_width=True):
+    if st.button("Track New Asset",use_container_width=True):
          st.switch_page("pages/AssetTracking.py")
+    if st.button("Remove Asset",use_container_width=True):
+         st.switch_page("pages/RemoveAsset.py")
 
 while True:
     time.sleep(30)

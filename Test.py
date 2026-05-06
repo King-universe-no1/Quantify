@@ -11,9 +11,11 @@
 #         return f"Error: {e}"
 # coverted=CurrencyConverter(100,"USD","INR")
 # print(coverted)
-from Helper import get_data
+from Helper import get_data,GetShortName
 import streamlit as st
 st.session_state.user_currency="Default"
 data=get_data([("Stock","WRTH",20.0,10),("Stock","AAPL",200.0,5),("Stock","TCS.NS",300.0,2),])
 print(data)
 st.write(data)
+name=GetShortName("TSLA")
+st.write(name)
