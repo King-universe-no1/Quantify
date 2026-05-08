@@ -1,3 +1,0 @@
-so the future ideas right now are adding crypto and commodities and an portfolio analyser which analyses your investment in each sector and type to help diversify your portfolio and add news related to stocks user tracks thorugh yfinance.Search and extract news
-
-currently stuff i am working on which i need to finish are complete the questions in registering a new asset and update the database to include quantity of stock and amount at which bought and price at which it was bought
