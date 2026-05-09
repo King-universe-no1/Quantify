@@ -90,6 +90,8 @@ def get_data(assets):
         if Atype=="Stock":
             print("Stock")
             data,currency=GetStockData(symbol)
+            time.sleep(1)
+            #avoiding rate limits
             #st.write(f"Currency: {currency}")
             if data.empty:
                 # st.warning(f"Error fetching data for {symbol}")
@@ -129,8 +131,7 @@ def get_data(assets):
                 })
                     # st.write("Results",results)
                 except Exception as e:
-                    st.warning(f"Error in data for {symbol}: {e}")
-                    
+                    st.warning(f"Error in data for {symbol}: {e}")  
             # for item in results:
             #     for key,value in item.items():
             #         for i in range(5):
@@ -151,10 +152,9 @@ def get_data(assets):
     return results
 @st.cache_data(ttl=300)
 #reduced caching time to 5 minutes
-def GetStockData(symbol,period="1d",interval="5m"):
+def GetStockData(symbol,period="1d",interval="10m"):
     print(f"Getting data for {symbol}")
     try:
-        import yfinance as yf
         stock=yf.Ticker(symbol)
     except Exception as e:
         st.warning(f"Error fetching data for {symbol}: {e}")
