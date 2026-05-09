@@ -162,7 +162,19 @@ def GetStockData(symbol,period="1d",interval="5m"):
     #st.write(stock.info)
     try:
         data=stock.history(period=period,interval=interval)
-        return data,stock.info["currency"]
+        try:
+            if data:
+                currency=stock.fast_info.get("currency","USD")
+                return data,currency
+            else:
+                st.warning(f"No currency info found for {symbol}, defaulting to USD")
+                return data,"USD"
+        except Exception as e:
+            st.warning(f"Error fetching currency for {symbol}: {e}")
+            return data,"USD"
+        # except Exception as e:
+        #     st.warning(f"Error extracting data from {symbol}: {e}",icon="⚠️")
+            return None,None
     except Exception as e:
         st.warning(f"Error extracting  data from {symbol}: {e}",icon="⚠️")
         return None,None
