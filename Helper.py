@@ -149,18 +149,23 @@ def get_data(assets):
     #!REMOVE AFTR BUG FIXES
     # return data
     return results
-@st.cache(ttl=300)
+@st.cache_data(ttl=300)
 #reduced caching time to 5 minutes
 def GetStockData(symbol,period="1d",interval="5m"):
     print(f"Getting data for {symbol}")
     try:
         import yfinance as yf
         stock=yf.Ticker(symbol)
+    except Exception as e:
+        st.warning(f"Error fetching data for {symbol}: {e}")
+        return None,None
     #st.write(stock.info)
+    try:
         data=stock.history(period=period,interval=interval)
         return data,stock.info["currency"]
     except Exception as e:
-        st.warning(f"Error fetching data for {symbol}: {e}",icon="⚠️")
+        st.warning(f"Error extracting  data from {symbol}: {e}",icon="⚠️")
+        return None,None
 @st.cache_data(ttl=3600)
 def SmartSearch(query):
     top5list=[]
