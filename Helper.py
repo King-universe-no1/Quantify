@@ -75,7 +75,7 @@ def CheckLoginState():
         st.stop("Tried to acces page without proper login")
         st.switch_page("Main.py")
         
-@st.cache_data(ttl=45)
+@st.cache_data(ttl=300)
 def get_data(assets):
     # st.write('Currency in get data',st.session_state.user_currency)
     results=[]
