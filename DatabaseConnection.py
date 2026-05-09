@@ -1,5 +1,5 @@
 import sqlite3
-from turtle import st
+from streamlit import st
 import bcrypt
 # connect (creates file if it doesn’t exist)
 conn = sqlite3.connect("FinancialTracker.db",check_same_thread=False)
