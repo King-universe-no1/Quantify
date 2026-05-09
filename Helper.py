@@ -149,7 +149,8 @@ def get_data(assets):
     #!REMOVE AFTR BUG FIXES
     # return data
     return results
-@st.cache(ttl=3600)
+@st.cache(ttl=300)
+#reduced caching time to 5 minutes
 def GetStockData(symbol,period="1d",interval="5m"):
     print(f"Getting data for {symbol}")
     try:
