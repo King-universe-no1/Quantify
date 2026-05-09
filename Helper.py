@@ -93,7 +93,7 @@ def get_data(assets):
             time.sleep(1)
             #avoiding rate limits
             #st.write(f"Currency: {currency}")
-            if data.empty:
+            if data.empty or data is None or currency is None:
                 # st.warning(f"Error fetching data for {symbol}")
                 continue
                 #skips it
@@ -161,6 +161,7 @@ def GetStockData(symbol,period="1d",interval="10m"):
         return None,None
     #st.write(stock.info)
     try:
+        print(f"Getting History for {symbol}")
         data=stock.history(period=period,interval=interval)
         try:
             if data:
