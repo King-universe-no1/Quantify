@@ -152,12 +152,13 @@ def get_data(assets):
     return results
 @st.cache_data(ttl=300)
 #reduced caching time to 5 minutes
-def GetStockData(symbol,period="1d",interval="10m"):
+def GetStockData(symbol,period="1d",interval="20m"):
     print(f"Getting data for {symbol}")
     try:
         stock=yf.Ticker(symbol)
     except Exception as e:
         st.warning(f"Error fetching data for {symbol}: {e}")
+        print(f"Error fetching data for {symbol}: {e}")
         return None,None
     #st.write(stock.info)
     try:
@@ -169,19 +170,23 @@ def GetStockData(symbol,period="1d",interval="10m"):
                 return data,currency
             else:
                 st.warning(f"No currency info found for {symbol}, defaulting to USD")
+                print(f"No currency info found for {symbol}, defaulting to USD")
                 return data,"USD"
         except Exception as e:
             st.warning(f"Error fetching currency for {symbol}: {e}")
+            print(f"Error fetching currency for {symbol}: {e}")
             return data,"USD"
         # except Exception as e:
         #     st.warning(f"Error extracting data from {symbol}: {e}",icon="⚠️")
             return None,None
     except Exception as e:
         st.warning(f"Error extracting  data from {symbol}: {e}",icon="⚠️")
+        print(f"Error fetching data for {symbol}: {e}")
         return None,None
 @st.cache_data(ttl=3600)
 def SmartSearch(query):
     top5list=[]
+    
     try:
         search=yf.Search(query).quotes
         #only getting the quotes from the search results as it contains the symbol and the type of asset
