@@ -93,7 +93,7 @@ def get_data(assets):
             time.sleep(1)
             #avoiding rate limits
             #st.write(f"Currency: {currency}")
-            if data.empty or data is None or currency is None:
+            if  data is None or currency is None:
                 # st.warning(f"Error fetching data for {symbol}")
                 continue
                 #skips it
